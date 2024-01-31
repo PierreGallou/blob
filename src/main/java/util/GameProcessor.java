@@ -1,5 +1,6 @@
 package util;
 
+import POJO.Background;
 import POJO.Blob;
 import POJO.GameController;
 import POJO.Plateforme;
@@ -7,7 +8,7 @@ import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 
-public class GameProcessor {
+public abstract class GameProcessor {
 
 
     public static void processPlayer(Blob player){
@@ -21,7 +22,7 @@ public class GameProcessor {
 
 
 
-    public static void processLevel(ArrayList<Plateforme> gatesLvl, GameController gameController, Pane root, int STEP_X) {
+    public static void processLevel(ArrayList<Plateforme> gatesLvl, Background back, GameController gameController, Pane root, int STEP_X) {
 
         for (int i = 0; i < gatesLvl.size()-1; ) {
             gatesLvl.get(i).setTranslateX(gatesLvl.get(i).getTranslateX() - STEP_X);
@@ -31,6 +32,9 @@ public class GameProcessor {
                 gatesLvl.remove(i);
             } else {i++;}
         }
+
+        back.setTranslateX(back.getTranslateX()-STEP_X);
+
         gameController.setPosX(gameController.getPosX()+STEP_X);
 
     }
@@ -47,7 +51,7 @@ public class GameProcessor {
                             player.setTranslateY(gatesLvl.get(i).getTranslateY() - player.getTaille());   // on repositionne bien au dessus de la plateforme
                             player.setVitesseY(0);                                  // pas de chute
                         } else { // perdu
-                            gameController.setGameSatus(0);
+                            gameController.setGameSatus(-1);
                         }
                     }
                 }
@@ -56,7 +60,7 @@ public class GameProcessor {
 
 
             if (player.getTranslateY()>800){
-                gameController.setGameSatus(0);   //perdu
+                gameController.setGameSatus(-1);   //perdu
             }
     }
 

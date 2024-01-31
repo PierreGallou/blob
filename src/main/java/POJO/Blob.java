@@ -1,6 +1,8 @@
 package POJO;
 
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 public class Blob extends Rectangle {
@@ -19,6 +21,11 @@ public class Blob extends Rectangle {
         this.taille=taille;
         setTranslateX(initDecalX);
         setTranslateY(initDecalY);
+
+        Image visual=new Image(getClass().getResource("/pictures/player.png").toExternalForm());
+        ImagePattern imagePattern=new ImagePattern(visual);
+        super.setFill(imagePattern);
+
     }
 
 
