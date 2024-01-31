@@ -6,7 +6,7 @@ plugins {
     id 'org.beryx.jlink' version '2.25.0'
 }
 
-group 'com.beginsecure'
+group 'com.begin'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -25,8 +25,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'com.beginsecure.blobfx'
-    mainClass = 'com.beginsecure.blobfx.HelloApplication'
+    mainModule = 'com.begin.blobfx'
+    mainClass = 'com.begin.blobfx.BlobApplication'
 }
 
 javafx {

@@ -1,9 +1,9 @@
-module com.beginsecure.blobfx {
+module com.begin.blobfx {
     requires javafx.controls;
     requires javafx.fxml;
 
     requires org.controlsfx.controls;
 
-    opens com.beginsecure.blobfx to javafx.fxml;
-    exports com.beginsecure.blobfx;
+    opens com.begin.blobfx to javafx.fxml;
+    exports com.begin.blobfx;
 }
