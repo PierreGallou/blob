@@ -25,7 +25,7 @@ public abstract class InitLvl {
             if (PlateformeList.get(i-1).getTranslateY()-(randHauteur)>300)
             {randHauteur=(int)PlateformeList.get(i-1).getTranslateY()-300;}     //on limite a 300 le décallage max pour rester jouable
 
-            int randLongueur=(int)(Math.random()*pSize+100);
+            int randLongueur=(int)(Math.random()*pSize+150);
 
             Plateforme plateformeTmp=new Plateforme(randHauteur,randLongueur,posX,epaisseur);
             PlateformeList.add(plateformeTmp);

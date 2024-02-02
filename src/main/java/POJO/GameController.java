@@ -6,7 +6,8 @@ public class GameController {
 
     private int gameSatus;
     private int posX;
-    private int nextPlateforme;
+
+    private long frameTime;
 
     public int getGameSatus() {return gameSatus;}
 
@@ -22,22 +23,16 @@ public class GameController {
         this.posX = posX;
     }
 
-    public int getNextPlateforme() {
-        return nextPlateforme;
-    }
-
-    public void setNextPlateforme(int nextGate) {
-        this.nextPlateforme = nextGate;
-    }
 
 
+    public long getFrameTime() {return frameTime;}
 
-
+    public void setFrameTime(long frameTime) {this.frameTime = frameTime;}
 
     public GameController(int posInit){
         this.gameSatus=0;
         this.posX=posInit;
-        this.nextPlateforme=0;
+        this.frameTime=System.nanoTime();
     }
 
 

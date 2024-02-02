@@ -10,11 +10,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import util.Endings;
 import util.GameProcessor;
 import util.InitLvl;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class BlobApplication extends Application {
 
@@ -22,9 +22,10 @@ public class BlobApplication extends Application {
     private final int PLATEFORM_SIZE_MAX = 1000;
     private final int PLATEFORM_H_MAX = 600;
     private final int PLATEFORM_EPAISSEUR = 100;
-    private final int STEP_X = 3;
+    private final int STEP_X = 5;
     private final int TAILLE_JOUEUR = 50;
-    private final int NB_PLATEFORME = 10;
+    private final int NB_PLATEFORME = 20;
+    private final int DELTAFRAME=10000000;
 
 
 
@@ -46,9 +47,9 @@ public class BlobApplication extends Application {
 
     @Override
     public void start(Stage stage) {
-        Scene scene = new Scene(createContent());
+        AtomicReference<Scene> scene = new AtomicReference<>(new Scene(createContent()));
 
-        scene.setOnKeyPressed(e -> {
+        scene.get().setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case ENTER -> {
                     if (gameController.getGameSatus() == 0) {
@@ -56,24 +57,29 @@ public class BlobApplication extends Application {
                     }
                 }
                 case SPACE -> {
-                    if ((player.getVitesseY() <= 0) && (player.getVitesseY() >= -player.getMass())) {
-                        player.setVitesseY(player.getJumpForce());
+                    if (player.isAuSol()) {
+                        player.Jump();
                     }
+                }
+
+                case TAB -> {
+                   createContent();
                 }
             }
         });
-        stage.setScene(scene);
+        stage.setScene(scene.get());
         stage.show();
     }
 
 
     private Parent createContent() {
-
-        root.setPrefSize(800, 600);
-
-        level = InitLvl.LvlGenerate(NB_PLATEFORME, PLATEFORM_H_MAX, PLATEFORM_SIZE_MAX,PLATEFORM_EPAISSEUR);
-        back=new Background((int)level.get(NB_PLATEFORME-1).getTranslateX()+level.get(NB_PLATEFORME-1).getLongueur()+800);
-        root.getChildren().add(back);
+       root.getChildren().clear();
+       root.setPrefSize(800, 600);
+       player = new Blob(1, 25, 20, 200, TAILLE_JOUEUR);
+        gameController = new GameController(0);
+       level = InitLvl.LvlGenerate(NB_PLATEFORME, PLATEFORM_H_MAX, PLATEFORM_SIZE_MAX,PLATEFORM_EPAISSEUR);
+       back=new Background((int)level.get(NB_PLATEFORME-1).getTranslateX()+level.get(NB_PLATEFORME-1).getLongueur()+800);
+       root.getChildren().add(back);
 
         for (Plateforme plateforme : level) {
             root.getChildren().add(plateforme);
@@ -81,10 +87,14 @@ public class BlobApplication extends Application {
 
 
         root.getChildren().add(player);
+
+
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                update();
+                if (GameProcessor.isNextFrame(gameController,DELTAFRAME)) {
+                    update();
+                }
             }
         };
         timer.start();
@@ -93,20 +103,12 @@ public class BlobApplication extends Application {
 
 
     private void update() {
-
         if (gameController.getGameSatus() == 1) {
             GameProcessor.processPlayer(player);
             GameProcessor.processLevel(level,back,gameController,root, STEP_X);
             GameProcessor.processCollision(player,level,gameController );
+            GameProcessor.processEnding(player,gameController,level,root);
         }
-
-        if (gameController.getGameSatus() ==-1) {
-            Endings.Perdu(root);
-
-        }
-
-
     }
-
 
 }

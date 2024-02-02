@@ -18,16 +18,19 @@ public abstract class GameProcessor {
         if  (updateVitessseY<-10){updateVitessseY=-10;}     //bridage de la vitesse de chute
         player.setVitesseY(updateVitessseY);
 
+        player.setAuSol(false);
+
+
+
     }
 
 
 
     public static void processLevel(ArrayList<Plateforme> gatesLvl, Background back, GameController gameController, Pane root, int STEP_X) {
 
-        for (int i = 0; i < gatesLvl.size()-1; ) {
+        for (int i = 0; i < gatesLvl.size(); ) {
             gatesLvl.get(i).setTranslateX(gatesLvl.get(i).getTranslateX() - STEP_X);
             if (gatesLvl.get(i).getTranslateX() < -gatesLvl.get(i).getLongueur()) {
-                gameController.setNextPlateforme(gameController.getNextPlateforme() + 1);
                 root.getChildren().remove(gatesLvl.get(0));
                 gatesLvl.remove(i);
             } else {i++;}
@@ -40,20 +43,25 @@ public abstract class GameProcessor {
     }
 
 
-    public static void processCollision (Blob player, ArrayList<Plateforme> gatesLvl, GameController gameController) {
-            for (int i = 0; i < 2; i++) {       //0 plateforme actuelle  1plateforme suivante
-                if (player.getBoundsInParent().intersects(gatesLvl.get(i).getBoundsInParent())) {
+    public static void processCollision (Blob player, ArrayList<Plateforme> level, GameController gameController) {
 
-                    System.out.println("process");
-                    if (player.getVitesseY() < 0) {
-                        if (player.getTranslateY() <= (gatesLvl.get(i).getTranslateY() - player.getVitesseY())) {
+        for (int i = 0; i < level.size(); i++) {       //0 plateforme actuelle  1plateforme suivante
+                if (player.getBoundsInParent().intersects(level.get(i).getBoundsInParent())) {
+
+
+                    if (player.getVitesseY() <= 0) {
+                        if (player.getTranslateY() <= (level.get(i).getTranslateY() - player.getVitesseY())) {
                             //le joueur marche sur la plateforme
-                            player.setTranslateY(gatesLvl.get(i).getTranslateY() - player.getTaille());   // on repositionne bien au dessus de la plateforme
+                            player.setTranslateY(level.get(i).getTranslateY() - player.getTaille());   // on repositionne bien au dessus de la plateforme
                             player.setVitesseY(0);                                  // pas de chute
-                        } else { // perdu
+                            player.setAuSol(true);
+                        } else { // contact par le coté
                             gameController.setGameSatus(-1);
-                        }
+                            }
                     }
+                    else {
+                        gameController.setGameSatus(-1);// contact par le bas
+                        }
                 }
             }
 
@@ -64,6 +72,38 @@ public abstract class GameProcessor {
             }
     }
 
+
+
+
+    public static boolean isNextFrame(GameController gameController, int minBetweenFrame) {
+
+    long deltaT=System.nanoTime()- gameController.getFrameTime();
+
+    if (deltaT>=minBetweenFrame)
+        {
+        gameController.setFrameTime(System.nanoTime());
+        return true;
+        }
+    else {return false;}
+
+    }
+
+
+    public static void processEnding(Blob player,GameController gameController, ArrayList<Plateforme> level,Pane root) {
+
+        if ((level.size()<=1)&&(player.isAuSol())) {
+            gameController.setGameSatus(2);
+        }
+
+
+
+        if (gameController.getGameSatus() ==-1) {Endings.Perdu(root);}
+        if (gameController.getGameSatus() ==2) {Endings.Gagne(root);}
+
+
+
+
+    }
 
 
 
