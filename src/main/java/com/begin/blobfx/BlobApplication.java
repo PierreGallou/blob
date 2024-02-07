@@ -19,21 +19,26 @@ import java.util.concurrent.atomic.AtomicReference;
 public class BlobApplication extends Application {
 
 
-    private final int PLATEFORM_SIZE_MAX = 1000;
+    private final int PLATEFORM_SIZE_VARIABLE = 1000;
+    private final int PLATEFORM_SIZE_MIN = 250;
     private final int PLATEFORM_H_MAX = 600;
     private final int PLATEFORM_EPAISSEUR = 100;
-    private final int STEP_X = 5;
-    private final int TAILLE_JOUEUR = 50;
-    private final int NB_PLATEFORME = 20;
-    private final int DELTAFRAME=10000000;
+    private final int NB_PLATEFORME = 5;
 
+    private final int JOUEUR_TAILLE = 50;
+    private final int JOUEUR_JUMP_PWR = 25;
+    private final int JOUEUR_VCHUTE_MAX = -20;
+
+    private final int STEP_X = 5;
+    private final int DELTAFRAME=10000000;
+    private final int PARALLAX = 3;
 
 
     private Pane root = new Pane();
-    private Blob player = new Blob(1, 25, 20, 200, TAILLE_JOUEUR);
+    private Blob player ;
     private Background back;
-    private ArrayList<Plateforme> level = new ArrayList<>();
-    private GameController gameController = new GameController(0);
+    private ArrayList<Plateforme> level ;
+    private GameController gameController ;
 
 
 
@@ -54,17 +59,12 @@ public class BlobApplication extends Application {
                 case ENTER -> {
                     if (gameController.getGameSatus() == 0) {
                         gameController.setGameSatus(1);
-                    }
+                    } else {gameController.setGameSatus(0);}
                 }
-                case SPACE -> {
-                    if (player.isAuSol()) {
-                        player.Jump();
-                    }
-                }
+                case SPACE -> player.Jump();
 
-                case TAB -> {
-                   createContent();
-                }
+                case TAB ->  createContent();
+
             }
         });
         stage.setScene(scene.get());
@@ -75,9 +75,9 @@ public class BlobApplication extends Application {
     private Parent createContent() {
        root.getChildren().clear();
        root.setPrefSize(800, 600);
-       player = new Blob(1, 25, 20, 200, TAILLE_JOUEUR);
-        gameController = new GameController(0);
-       level = InitLvl.LvlGenerate(NB_PLATEFORME, PLATEFORM_H_MAX, PLATEFORM_SIZE_MAX,PLATEFORM_EPAISSEUR);
+       player = new Blob(1, JOUEUR_JUMP_PWR, 5, 200, JOUEUR_TAILLE,JOUEUR_VCHUTE_MAX);
+       gameController = new GameController();
+       level = InitLvl.LvlGenerate(NB_PLATEFORME, PLATEFORM_H_MAX, PLATEFORM_SIZE_VARIABLE,PLATEFORM_EPAISSEUR,PLATEFORM_SIZE_MIN);
        back=new Background((int)level.get(NB_PLATEFORME-1).getTranslateX()+level.get(NB_PLATEFORME-1).getLongueur()+800);
        root.getChildren().add(back);
 
@@ -104,8 +104,8 @@ public class BlobApplication extends Application {
 
     private void update() {
         if (gameController.getGameSatus() == 1) {
-            GameProcessor.processPlayer(player);
-            GameProcessor.processLevel(level,back,gameController,root, STEP_X);
+            GameProcessor.processPlayer(player,level);
+            GameProcessor.processLevel(level,back,root, STEP_X,PARALLAX);
             GameProcessor.processCollision(player,level,gameController );
             GameProcessor.processEnding(player,gameController,level,root);
         }

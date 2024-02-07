@@ -1,31 +1,24 @@
 package POJO;
 
-import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
-public class Background extends Rectangle {
+import java.util.Objects;
 
-    private int longueur;
+public class Background extends Rectangle {
 
 
     public Background(  int longu){
         super(longu,800, Color.BLUE);
-        this.longueur=longu;
 
         setTranslateX(0);
         setTranslateY(0);
 
-        Image visual=new Image(getClass().getResource("/pictures/background.jpg").toExternalForm());
-        ImagePattern imagePattern=new ImagePattern(visual,0,0,800,600,false);
+        Image visual=new Image(Objects.requireNonNull(getClass().getResource("/pictures/background.jpg")).toExternalForm());
+        ImagePattern imagePattern=new ImagePattern(visual,0,0,1250,1250,false);
         super.setFill(imagePattern);
-
-//        Bloom bloom = new Bloom();
-//        bloom.setThreshold(0.7);
-//        super.setEffect(bloom);
-
 
 
 

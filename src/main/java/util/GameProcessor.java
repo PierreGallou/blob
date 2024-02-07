@@ -11,22 +11,24 @@ import java.util.ArrayList;
 public abstract class GameProcessor {
 
 
-    public static void processPlayer(Blob player){
-        player.setTranslateY(player.getTranslateY()-player.getVitesseY());
+    public static void processPlayer(Blob player, ArrayList<Plateforme> level){
 
-        int updateVitessseY=player.getVitesseY()-player.getMass();
-        if  (updateVitessseY<-10){updateVitessseY=-10;}     //bridage de la vitesse de chute
-        player.setVitesseY(updateVitessseY);
+        player.setTranslateY(player.getTranslateY()-player.getVitesseY());
+        player.updateVitessseY();
+
+        if (level.size()>1) {
+            if (player.calculateJump( )) {  //TODO: mettre a jour arguments en fonction du prototype
+                player.Jump();
+            }
+        }
 
         player.setAuSol(false);
-
-
 
     }
 
 
 
-    public static void processLevel(ArrayList<Plateforme> gatesLvl, Background back, GameController gameController, Pane root, int STEP_X) {
+    public static void processLevel(ArrayList<Plateforme> gatesLvl, Background back, Pane root, int STEP_X,int parallax) {
 
         for (int i = 0; i < gatesLvl.size(); ) {
             gatesLvl.get(i).setTranslateX(gatesLvl.get(i).getTranslateX() - STEP_X);
@@ -36,34 +38,29 @@ public abstract class GameProcessor {
             } else {i++;}
         }
 
-        back.setTranslateX(back.getTranslateX()-STEP_X);
+        back.setTranslateX(back.getTranslateX()-STEP_X/parallax);
 
-        gameController.setPosX(gameController.getPosX()+STEP_X);
 
     }
 
 
     public static void processCollision (Blob player, ArrayList<Plateforme> level, GameController gameController) {
 
-        for (int i = 0; i < level.size(); i++) {       //0 plateforme actuelle  1plateforme suivante
-                if (player.getBoundsInParent().intersects(level.get(i).getBoundsInParent())) {
+        for (Plateforme plateforme : level) {       //0 plateforme actuelle  1plateforme suivante
+            if (player.getBoundsInParent().intersects(plateforme.getBoundsInParent())) {
 
-
+                if (player.getTranslateY() <= (plateforme.getTranslateY() - player.getVitesseY())) {
+                    //le joueur est sur la plateforme
+                    player.setTranslateY(plateforme.getTranslateY() - player.getTaille());   // on repositionne bien au dessus de la plateforme
                     if (player.getVitesseY() <= 0) {
-                        if (player.getTranslateY() <= (level.get(i).getTranslateY() - player.getVitesseY())) {
-                            //le joueur marche sur la plateforme
-                            player.setTranslateY(level.get(i).getTranslateY() - player.getTaille());   // on repositionne bien au dessus de la plateforme
-                            player.setVitesseY(0);                                  // pas de chute
-                            player.setAuSol(true);
-                        } else { // contact par le coté
-                            gameController.setGameSatus(-1);
-                            }
-                    }
-                    else {
-                        gameController.setGameSatus(-1);// contact par le bas
-                        }
+                        player.setVitesseY(0);
+                    }                // pas de chute
+                    player.setAuSol(true);
+                } else { // contact par le coté ou le bas
+                    gameController.setGameSatus(-1);
                 }
             }
+        }
 
 
 

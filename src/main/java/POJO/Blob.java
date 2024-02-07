@@ -1,10 +1,14 @@
 package POJO;
 
 import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+
+import java.util.Objects;
 
 public class Blob extends Rectangle {
 
@@ -13,35 +17,64 @@ public class Blob extends Rectangle {
     int vitesseY;
     int taille;
     boolean auSol;
-    boolean jumpAsk;
+    int vChuteMax;
 
-
-    public Blob(int m, int jumpForce, int initDecalX, int initDecalY, int taille) {
+    public Blob(int m, int jumpForce, int initDecalX, int initDecalY, int taille, int vChute) {
         super(taille,taille, Color.RED);
         this.mass=m;
         this.vitesseY=0;
         this.jumpForce=jumpForce;
         this.taille=taille;
-
+        this.vChuteMax=vChute;
         this.auSol=false;
-        this.jumpAsk=false;
+
         setTranslateX(initDecalX);
         setTranslateY(initDecalY);
 
-        Image visual=new Image(getClass().getResource("/pictures/player.png").toExternalForm());
+        Image visual=new Image(Objects.requireNonNull(getClass().getResource("/pictures/player.png")).toExternalForm());
         ImagePattern imagePattern=new ImagePattern(visual);
         super.setFill(imagePattern);
 
 
+        final Light.Distant light = new Light.Distant();
+        light.setAzimuth(-45.0);
+        final Lighting lighting = new Lighting();
+        lighting.setLight(light);
+        lighting.setSurfaceScale(3.0);
+        lighting.setDiffuseConstant(1.5);
+        lighting.setSpecularConstant(0.75);
 
+
+        super.setEffect(lighting);
         super.setBlendMode(BlendMode.HARD_LIGHT);
+
     }
 
 
 
 
     public void Jump() {
-       this.vitesseY=this.jumpForce;
+        if (this.auSol) {this.vitesseY=this.jumpForce;}
+    }
+
+
+
+
+    public boolean calculateJump ( ) {
+
+        //TODO: logique a integrer
+
+
+        return false;
+    }
+
+
+
+    public void updateVitessseY() {
+        this.vitesseY=this.vitesseY-this.mass;
+        if (this.vitesseY<this.vChuteMax){
+            this.vitesseY=this.vChuteMax;
+        }
     }
 
 
@@ -49,23 +82,14 @@ public class Blob extends Rectangle {
 
 
 
-    public int getMass() {
-        return mass;
-    }
-    public int getJumpForce() {
-        return jumpForce;
-    }
+
     public int getVitesseY() { return vitesseY; }
     public int getTaille() {return taille;}
-
-    public void setVitesseY(int Vitesse) {
-        this.vitesseY = Vitesse;
-    }
-
     public boolean isAuSol() {return auSol;}
+
+
+    public void setVitesseY(int Vitesse) {this.vitesseY = Vitesse;}
     public void setAuSol(boolean auSol) {this.auSol = auSol;}
 
-    public boolean isJumpAsk() {return jumpAsk;}
 
-    public void setJumpAsk(boolean jumpAsk) {this.jumpAsk = jumpAsk;}
 }

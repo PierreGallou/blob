@@ -6,13 +6,13 @@ import java.util.ArrayList;
 
 public abstract class InitLvl {
 
-    public static ArrayList<Plateforme> LvlGenerate(int nbPlateforme, int hWindow , int pSize, int epaisseur) {
+    public static ArrayList<Plateforme> LvlGenerate(int nbPlateforme, int hWindow , int pSizeVar, int epaisseur, int pSizeMin) {
 
         ArrayList<Plateforme> PlateformeList=new ArrayList<>();
         int posX=0;
 
         //placement de la 1ere plateforme au centre de l'écran
-        Plateforme startPlateforme= new Plateforme(hWindow/2, 400,0 ,epaisseur);
+        Plateforme startPlateforme= new Plateforme(hWindow/2, pSizeMin,0 ,epaisseur);
         PlateformeList.add(startPlateforme);
 
         posX=posX+startPlateforme.getLongueur();
@@ -25,7 +25,7 @@ public abstract class InitLvl {
             if (PlateformeList.get(i-1).getTranslateY()-(randHauteur)>300)
             {randHauteur=(int)PlateformeList.get(i-1).getTranslateY()-300;}     //on limite a 300 le décallage max pour rester jouable
 
-            int randLongueur=(int)(Math.random()*pSize+150);
+            int randLongueur=(int)(Math.random()*pSizeVar+pSizeMin);
 
             Plateforme plateformeTmp=new Plateforme(randHauteur,randLongueur,posX,epaisseur);
             PlateformeList.add(plateformeTmp);
